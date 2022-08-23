@@ -32,18 +32,36 @@ async function LogIn(username, password) {
   };
   
   let isLogined = false;
+  let result = {};
+
   await request.post(options)
     .then((data) => {
-      if(data.includes(username))
-        isLogined = true;
+      if(data.includes(username)) {
+        result["isLogined"] = true;
+        result["msg"] = "Đăng nhập thành công";
+      }
+      else if(data.includes("Tài khoản / mật khẩu không đúng")) {
+        result["isLogined"] = false;
+        result["msg"] = "Tài khoản / mật khẩu không đúng";
+      }
+      else {
+        result["isLogined"] = false;
+        result["msg"] = "Lỗi không xác định";
+      }
     })
     .catch((err) => {
       console.log("Code đăng nhập: ", err.statusCode);
-      if(err.statusCode == 302)
-        isLogined = true;
+      if(err.statusCode == 302) {
+        result["isLogined"] = true;
+        result["msg"] = "Đăng nhập thành công";
+      }
+      else {
+        result["isLogined"] = false;
+        result["msg"] = "Lỗi không xác định";
+      }
     });
   
-  return isLogined;
+  return result;
 }
 
 exports.LogIn = LogIn
@@ -70,7 +88,7 @@ async function Start() {
       await StartDKHP(HideValues[2])
         .then(function(data) {
           console.log(data);
-          i += 1;
+          i+=2;
           result[data.Obj1] = data.Msg;
         })
         .catch(function(error) {

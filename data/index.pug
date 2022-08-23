@@ -18,14 +18,14 @@ html(lang='en')
           input.form-control(type='text' name='username' placeholder='Nhập tài khoản...' required='required')
         .form-group
           label(for='cookie') Mật khẩu
-          input.form-control(type='text' name='password' placeholder='Nhập mật khẩu...' required='required')
+          input.form-control(type='password' name='password' placeholder='Nhập mật khẩu...' required='required')
         .container
           button#myBtn1.btn.btn-success(onclick='DangNhap()' type='button')
             | Đăng nhập
         p#encoded
         .form-group
           label(for='dsmon') Môn học đăng ký
-          textarea.form-control(name='dsmon' placeholder='Mỗi môn 2 dòng... (dòng 1: mã môn, dòng 2: mã lớp cụ thể)' rows='8' cols='50' required='required')
+          textarea.form-control(name='dsmon' placeholder='Mỗi môn 2 dòng... (dòng 1: mã môn, dòng 2: mã lớp cụ thể)\nVí dụ:\n2211PRIM1711\n2211PRIM171106' rows='8' cols='50' required='required')
         .container
           button#myBtn2.btn.btn-success(onclick='DangKy()' type='button')
             | Đăng ký môn
@@ -57,8 +57,12 @@ html(lang='en')
 
           let text = await response.json();
           console.log(text);
-          document.getElementById("myBtn2").disabled = false;
-          document.querySelector("#encoded").innerHTML = text;
+          document.querySelector("#encoded").innerHTML = text.msg;
+          
+          if(!text.isLogined) 
+            document.getElementById("myBtn1").disabled = false;
+          else
+            document.getElementById("myBtn2").disabled = false;
         }
       };
 
@@ -85,5 +89,11 @@ html(lang='en')
       };
 
       window.onload = function() {
+          var textAreas = document.getElementsByTagName('textarea');
+          
+          Array.prototype.forEach.call(textAreas, function(elem) {
+              elem.placeholder = elem.placeholder.replace(/\\n/g, '\n');
+          });
+
           document.getElementById("myBtn2").disabled = true;
       }

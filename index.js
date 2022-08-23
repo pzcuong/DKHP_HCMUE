@@ -21,10 +21,10 @@ app.get('/', (req, res) => {
 
 app.post('/dangnhap', async (req, res) => { 
   let result = await MyFunction.LogIn(req.body.username, req.body.password);
-  while (!result) {
+  /* while (!result.isLogined) {
     console.log("Đang đăng nhập lại...");
-    await MyFunction.LogIn();
-  }
+    result = await MyFunction.LogIn();
+  } */
   res.send(result);
 })
 
