@@ -1,0 +1,89 @@
+doctype html
+html(lang='en')
+  head
+    title Bootstrap Example
+    meta(charset='utf-8')
+    meta(name='viewport' content='width=device-width, initial-scale=1')
+    link(rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css')
+    script(src='https://ajax.googleapis.com/ajax/libs/jquery/3.4.0/jquery.min.js')
+    script(src='https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js')
+  body
+    .container(style='color:green')
+      h1 Đăng ký học phần HCMUE
+    .container
+      h4 Form Thông Tin
+      form#formElem(action='/' method='POST')
+        .form-group
+          label(for='cookie') Tài khoản
+          input.form-control(type='text' name='username' placeholder='Nhập tài khoản...' required='required')
+        .form-group
+          label(for='cookie') Mật khẩu
+          input.form-control(type='text' name='password' placeholder='Nhập mật khẩu...' required='required')
+        .container
+          button#myBtn1.btn.btn-success(onclick='DangNhap()' type='button')
+            | Đăng nhập
+        p#encoded
+        .form-group
+          label(for='dsmon') Môn học đăng ký
+          textarea.form-control(name='dsmon' placeholder='Mỗi môn 2 dòng... (dòng 1: mã môn, dòng 2: mã lớp cụ thể)' rows='8' cols='50' required='required')
+        .container
+          button#myBtn2.btn.btn-success(onclick='DangKy()' type='button')
+            | Đăng ký môn
+        p#encoded2
+
+    script.
+      async function DangNhap() {
+        var form = document.querySelector("#formElem");
+        data = {
+          username : form.querySelector('input[name="username"]').value,
+          password : form.querySelector('input[name="password"]').value
+        }
+        console.log(data.cookie);
+
+        if(data.username == '' || data.password == '')
+          document.querySelector("#encoded").innerHTML = "Bắt buộc phải có thông tin tài khoản, mật khẩu!";
+        else {
+          document.querySelector("#encoded").innerHTML = "Đang tiến hành đăng nhập, vui lòng KHÔNG tải lại trang! \nQuá trình có thể mất vài phút!";
+          document.getElementById("myBtn1").disabled = true;
+
+          let response = await fetch('/dangnhap', {
+            method: 'POST', 
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(data),
+            json: true
+          });
+
+          let text = await response.json();
+          console.log(text);
+          document.getElementById("myBtn2").disabled = false;
+          document.querySelector("#encoded").innerHTML = text;
+        }
+      };
+
+      async function DangKy() {
+        var form = document.querySelector("#formElem");
+        data = {
+          dsmon : form.querySelector('textarea[name="dsmon"]').value,
+        }
+        if (data.dsmon == '')
+          document.querySelector("#encoded2").innerHTML = "Bắt buộc phải điền đầy đủ thông tin!";
+        else {
+          let response = await fetch('/dangky', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(data),
+            json: true
+          });
+          let text = await response.json();
+          console.log(text)
+          window.open(text.url,'_blank');
+        }
+      };
+
+      window.onload = function() {
+          document.getElementById("myBtn2").disabled = true;
+      }
